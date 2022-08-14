@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞机大战</title>
+    <style>
+        div {
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid pink;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" width="480" height="650"></canvas>
+        <script src="./js/config.js"></script>
+        <script src="./js/bullet.js"></script>
+        <script src="./js/enemy.js"></script>
+        <script src="./js/hero.js"></script>
+        <script src="./js/loading.js"></script>
+        <script src="./js/sky.js"></script>
+        <script src="./js/main.js"></script>
+        <script>
+            // const image = (path) => {
+            //     let img = new Image()
+            //     img.src = path
+            //     return img
+            // }
+            // let canvas = document.querySelector('#canvas')
+            // let context = canvas.getContext('2d')
+            //定义游戏状态
+            //开始
+            // const Start = 0
+            // //开始时
+            // const Starting = 1
+            // //运行时
+            // const Running = 2
+            // //暂停时
+            // const Pause = 3
+            // //结束时
+            // const End = 4
+            // let score = 0
+            // let life = 3
+            // //初始化图片
+            // let bg = image("./images/background.png")
+            // let copyRight = image('./images/resume_pressed.png')
+            // let LoadingImage = image('./images/life.png')
+            // let hero1 = image('./images/me1.png')
+            // let hero2 = image('./images/me2.png')
+            // let destroy_1 = image('./images/me_destroy_1.png')
+            // let destroy_2 = image('./images/me_destroy_2.png')
+            // let destroy_3 = image('./images/me_destroy_3.png')
+            // let destroy_4 = image('./images/me_destroy_4.png')
+            // let bulletImage = image('./images/bullet1.png')
+
+            // let enemyImage1 = image("./images/enemy1.png")
+            // let enemyImage1_1 = image("./images/enemy1_down1.png")
+            // let enemyImage1_2 = image("./images/enemy1_down2.png")
+            // let enemyImage1_3 = image("./images/enemy1_down3.png")
+            // let enemyImage1_4 = image("./images/enemy1_down4.png")
+
+            // let enemyImage2 = image("./images/enemy2.png")
+            // let enemyImage2_1 = image("./images/enemy2_down1.png")
+            // let enemyImage2_2 = image("./images/enemy2_down2.png")
+            // let enemyImage2_3 = image("./images/enemy2_down3.png")
+            // let enemyImage2_4 = image("./images/enemy2_down4.png")
+
+            // let enemyImage3 = image("./images/enemy3_n1.png")
+            // let enemyImage3_1 = image("./images/enemy3_down1.png")
+            // let enemyImage3_2 = image("./images/enemy3_down2.png")
+            // let enemyImage3_3 = image("./images/enemy3_down3.png")
+            // let enemyImage3_4 = image("./images/enemy3_down4.png")
+            // let PauseImage = image('./images/pause_nor.png')
+            // //初始化开始背景
+            // //背景的配置
+            // const SKY = {
+            //     bg: bg,
+            //     width: 480,
+            //     height: 650,
+            //     speed: 30
+            // }
+
+            // //飞机加载页面的配置
+            // const LOADING = {
+            //     bg: LoadingImage,
+            //     x: 0,
+            //     y: 600,
+            //     speed: 30,
+            // }
+
+            // //英雄配置
+            // const HERO = {
+            //     frame: {
+            //         live: [hero1, hero2],
+            //         death: [destroy_1, destroy_2, destroy_3, destroy_4]
+            //     },
+            //     x: 0,
+            //     y: 650 - 126,
+            //     width: 102,
+            //     height: 126,
+            //     speed: 30
+            // }
+            // //子弹配置项
+            // let BULLET = {
+            //     width: 5,
+            //     height: 11,
+            //     img: bulletImage
+            // }
+            // let ENEMY1 = {
+            //     type: 1,
+            //     width: 57,
+            //     height: 51,
+            //     life: 1,
+            //     score: 10,
+            //     frame: {
+            //         live: [enemyImage1],
+            //         death: [enemyImage1_1, enemyImage1_2, enemyImage1_3, enemyImage1_4]
+            //     },
+            //     minSpeed: 20,
+            //     maxSpeed: 30
+            // }
+            // let ENEMY2 = {
+            //     type: 2,
+            //     width: 69,
+            //     height: 99,
+            //     life: 10,
+            //     score: 20,
+            //     frame: {
+            //         live: [enemyImage2,],
+            //         death: [enemyImage2_1, enemyImage2_2, enemyImage2_3, enemyImage2_4]
+            //     },
+            //     minSpeed: 40,
+            //     maxSpeed: 50
+            // }
+            // let ENEMY3 = {
+            //     type: 3,
+            //     width: 169,
+            //     height: 258,
+            //     life: 20,
+            //     score: 30,
+            //     frame: {
+            //         live: [enemyImage3,],
+            //         death: [enemyImage3_1, enemyImage3_2, enemyImage3_3, enemyImage3_4]
+            //     },
+            //     minSpeed: 60,
+            //     maxSpeed: 70
+            // }
+            //背景类
+            // class Sky {
+            //     constructor(config) {
+            //         this.bg = config.bg
+            //         this.width = config.width
+            //         this.height = config.height
+            //         this.x = 0
+            //         this.y1 = 0
+            //         this.y2 = -this.height
+            //         this.speed = config.speed
+            //         this.lastTime = new Date().getTime()
+            //     }//背景图
+            //     judge() {
+            //         let currentTime = new Date().getTime()
+            //         if (currentTime - this.lastTime >= this.speed) {
+            //             this.y1++
+            //             this.y2++
+            //             this.lastTime = currentTime
+            //         }
+            //         if (this.y2 === 0) {
+            //             this.y1 = 0
+            //             this.y2 = -this.height
+            //         }
+            //     }
+            //     paint(context) {
+            //         context.drawImage(this.bg, this.x, this.y1, 480, 650)
+            //         context.drawImage(this.bg, this.x, this.y2, 480, 650)
+            //     }
+            // }
+
+            //初始化飞机页面加载类
+            // class Loading {
+            //     constructor(config) {
+            //         this.bg = config.bg
+            //         this.x = config.x
+            //         this.y = config.y
+            //         this.speed = config.speed,
+            //             this.lastTime = new Date().getTime()
+            //     }
+            //     judge() {
+            //         let currentTime = new Date().getTime()
+            //         if (currentTime - this.lastTime >= this.speed) {
+            //             this.x += 10
+            //             this.lastTime = currentTime
+            //         }
+
+            //         if (this.x === 500) {
+            //             state = Running
+            //         }
+            //     }
+            //     paint(context) {
+            //         context.drawImage(this.bg, this.x, this.y)
+            //     }
+            // }
+
+            //定义子弹类
+            // class Bullet {
+            //     constructor(config, x, y) {
+            //         this.img = config.img
+            //         this.width = config.width
+            //         this.height = config.height
+            //         this.x = x
+            //         this.y = y
+            //         this.destroy = false
+            //     }
+            //     move() {
+            //         this.y -= 2
+            //     }
+            //     paint(context) {
+            //         context.drawImage(this.img, this.x, this.y)
+            //     }
+            //     outOfBounds() {
+            //         return this.y < -this.height
+            //     }
+            //     collide() {
+            //         this.destroy = true
+            //     }
+
+            // }
+            //初始化一个敌机类
+            // class Enemy {
+            //     constructor(config) {
+            //         this.type = config.type
+            //         this.width = config.width
+            //         this.height = config.height
+            //         this.y = -config.height
+            //         this.x = Math.floor(Math.random() * (480 - config.width))
+            //         this.life = config.life
+            //         this.score = config.score
+            //         this.frame = config.frame
+            //         this.img = config.frame.live[0]
+            //         this.live = true
+            //         this.minSpeed = config.minSpeed
+            //         this.maxSpeed = config.maxSpeed
+            //         this.lastTime = new Date().getTime()
+            //         this.speed = Math.floor(Math.random() * (config.minSpeed - config.maxSpeed + 1)) + config.maxSpeed
+            //         this.deathIndex = 0
+            //         this.destroy = false
+            //     }
+            //     move() {
+            //         const currentTime = new Date().getTime()
+            //         if (currentTime - this.lastTime >= this.speed) {
+            //             if (this.live) {
+            //                 this.img = this.frame.live[0]
+            //                 this.y++
+
+            //             } else {
+            //                 this.img = this.frame.death[this.deathIndex++]
+            //                 if (this.deathIndex === this.frame.death.length) {
+            //                     this.destroy = true
+            //                 }
+            //             }
+            //             this.lastTime = currentTime
+            //         }
+            //     }
+            //     paint(context) {
+            //         context.drawImage(this.img, this.x, this.y)
+            //     }
+            //     outOfBounds() {
+            //         return this.y > 650 + this.height
+            //     }
+            //     //碰撞方法
+            //     hit(o) {
+            //         let el = this.x
+            //         let er = this.x + this.width
+            //         let et = this.y
+            //         let eb = this.y + this.height
+            //         let ol = o.x
+            //         let or = o.x + o.width
+            //         let ot = o.y
+            //         let ob = o.y + o.height
+            //         if (ol > er || or < el || ot > eb || ob < et) {
+            //             return false
+            //         } else {
+            //             return true
+            //         }
+            //     }
+            //     collide() {
+            //         this.life--
+            //         if (this.life === 0) {
+            //             this.live = false
+            //             score += this.score
+            //         }
+            //     }
+
+
+            // }
+            //初始化一个英雄类
+            // class Hero {
+            //     constructor(config) {
+            //         this.frame = config.frame
+            //         this.x = config.x
+            //         this.y = config.y
+            //         this.live = true
+            //         this.width = config.width
+            //         this.height = config.height
+            //         this.speed = config.speed
+            //         this.lastTime = new Date().getTime()
+            //         this.img = this.frame.live[0]
+            //         this.frameLiveIndex = 0
+            //         this.frameDeathIndex = 0
+            //         //子弹上次射击的事件
+            //         this.lastShootTime = new Date().getTime()
+            //         this.shootInterval = 200
+            //         this.bulletList = []
+            //         this.destroy = false
+            //     }
+            //     judge() {
+            //         const currentTime = new Date().getTime()
+            //         if (currentTime - this.lastTime > this.speed) {
+            //             if (this.live) {
+            //                 this.img = this.frame.live[this.frameLiveIndex++ % 2]
+            //             } else {
+            //                 this.img = this.frame.death[this.frameDeathIndex++]
+            //                 if (this.frameDeathIndex === this.frame.death.length) {
+            //                     this.destroy = true
+            //                 }
+            //             }
+            //             this.lastTime = currentTime
+            //         }
+            //     }
+            //     paint(context) {
+            //         context.drawImage(this.img, this.x, this.y)
+            //     }
+            //     shoot() {
+            //         const currentTime = new Date().getTime()
+            //         if (currentTime - this.lastShootTime > this.shootInterval) {
+            //             let bullet = new Bullet(BULLET, this.x + this.width / 2, this.y - BULLET.height)
+            //             bullet.paint(context)
+            //             this.bulletList.push(bullet)
+            //             this.lastShootTime = currentTime
+            //         }
+            //     }
+            //     collide() {
+            //         this.live = false
+            //     }
+            // }
+
+
+            // const sky = new Sky(SKY)
+            // const loading = new Loading(LOADING)
+            // let hero = new Hero(HERO)
+            // let state = Start//定义游戏状态
+            // //开始
+            // canvas.addEventListener('click', function (e) {
+            //     if (state === Start) {
+            //         state = Starting
+            //     }
+            // })
+            // canvas.addEventListener('mousemove', function (e) {
+            //     hero.x = e.offsetX - hero.width / 2
+            //     hero.y = e.offsetY - hero.height / 2
+            // })
+            // canvas.addEventListener('mouseleave', function () {
+            //     if (state === Running) {
+            //         state = Pause
+            //     }
+            // })
+            // canvas.addEventListener('mouseenter', function () {
+            //     if (state === Pause) {
+            //         state = Running
+            //     }
+            // })
+
+            // //全局函数，生成敌方飞机
+            // let enemies = []
+            // let level = 33 //飞机产生的速率
+            // let lastTime = new Date().getTime()
+            // function createComponent() {
+            //     const currentTime = new Date().getTime()
+            //     if (currentTime - lastTime > level) {
+            //         let ran = Math.floor(Math.random() * 100)
+            //         if (ran < 60) {
+            //             enemies.push(new Enemy(ENEMY1))
+            //         } else if (ran > 60 && ran < 90) {
+            //             enemies.push(new Enemy(ENEMY2))
+            //         } else {
+            //             enemies.push(new Enemy(ENEMY3))
+            //         }
+            //     }
+            //     lastTime = currentTime
+            // }
+
+            // //全局函数，判断敌人和子弹
+            // function judgeComponent() {
+            //     for (let index = 0; index < hero.bulletList.length; index++) {
+            //         hero.bulletList[index].move()
+            //     }
+            //     for (let i = 0; i < enemies.length; i++) {
+            //         enemies[i].move()
+
+            //     }
+
+            // }
+            // //全局函数，来绘制敌人和子弹
+            // function paintComponent() {
+            //     for (let index = 0; index < hero.bulletList.length; index++) {
+            //         hero.bulletList[index].paint(context)
+            //     }
+            //     for (let i = 0; i < enemies.length; i++) {
+            //         enemies[i].paint(context)
+            //     }
+            //     context.font = "20px 微软雅黑"
+            //     context.fillText('分数 :' + score, 10, 20)
+            //     context.fillText('生命 :' + life, 400, 20)
+
+            // }
+            // //全局函数，来销毁子弹和敌人
+            // function deleteComponent() {
+            //     if (hero.destroy) {
+            //         life--
+            //         hero.destroy = false
+            //         if (life === 0) {
+            //             state = End
+            //         } else {
+            //             hero = new Hero(HERO)
+            //         }
+            //     }
+            //     for (let index = 0; index < hero.bulletList.length; index++) {
+            //         if (hero.bulletList[index].outOfBounds() || hero.bulletList[index].destroy) {
+            //             hero.bulletList.splice(index, 1)
+            //         }
+            //     }
+            //     for (let i = 0; i < enemies.length; i++) {
+            //         if (enemies[i].outOfBounds() || enemies[i].destroy) {
+            //             enemies.splice(i, 1)
+            //         }
+            //     }
+
+
+            // }
+            // //碰撞检测函数
+            // function checkHit() {
+            //     for (let i = 0; i < enemies.length; i++) {
+            //         if (enemies[i].hit(hero)) {
+            //             enemies[i].collide()
+            //             hero.collide()
+            //         }
+            //         for (let j = 0; j < hero.bulletList.length; j++) {
+            //             if (enemies[i].hit(hero.bulletList[j])) {
+            //                 enemies[i].collide()
+            //                 hero.bulletList[j].collide()
+            //             }
+            //         }
+            //     }
+            // }
+
+
+            // bg.addEventListener('load', function () {
+            //     setInterval(() => {
+            //         switch (state) {
+            //             case Start:
+            //                 sky.judge()
+            //                 sky.paint(context)
+            //                 context.drawImage(copyRight, (240 - copyRight.width / 2), (340 - copyRight.height / 2))
+            //                 break
+            //             case Starting:
+            //                 sky.judge()
+            //                 sky.paint(context)
+            //                 loading.judge()
+            //                 loading.paint(context)
+            //                 break
+            //             case Running:
+            //                 sky.judge()
+            //                 sky.paint(context)
+            //                 hero.judge()
+            //                 hero.paint(context)
+            //                 hero.shoot()
+            //                 createComponent()
+            //                 judgeComponent()
+            //                 deleteComponent()
+            //                 paintComponent()
+            //                 checkHit()
+            //                 break
+            //             case Pause:
+            //                 console.log(22)
+            //                 context.drawImage(PauseImage, (240 - copyRight.width / 2), (340 - copyRight.height / 2))
+            //                 break
+            //             case End:
+            //                 context.textAlign = "center"
+            //                 context.textBaseline = 'center'
+            //                 context.font = "bold 24px 微软雅黑"
+            //                 context.fillText('GAME OVER', 480 / 2, 650 / 2)
+            //                 break
+            //         }
+            //     }, 1000 / 30)
+            // })
+
+        </script>
+    </div>
+</body>
+
+</html>

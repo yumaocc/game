@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #id_canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="id_canvas" width="400" height="500"></canvas>
+    <input type="range" id="input_range">
+    <button id="btn">地狱模式</button>
+    <script src="./block.js"></script>
+    <script src="./level.js"></script>
+    <script src="./guaGame.js"></script>
+    <script src="./ball.js"></script>
+    <script src="./loadLevel.js"></script>
+    <script src="./paddle.js"></script>
+    <script>
+        window.fps = 60
+        window.gameOver = true
+        window.begin = false
+        input_range.addEventListener('input', function (e) {
+            window.fps = e.target.value
+        })
+        let imgFromPath = (path) => {//生成一个图片
+            const img = new Image()
+            img.src = path
+            return img
+        }
+        //判断相撞
+        let rectIntersects = function (a, b) {
+            let o = a
+            if (b.y > o.y && b.y < o.y + o.image.height) {
+                if (b.x > o.x && b.x < o.x + o.image.width) {
+                    return true
+                }
+            }
+            return false
+        }
+
+
+        function __main() {
+
+            let paddle = Paddle()
+            let ball = Ball()
+            let game = guaGame()
+            let blocks = loadLevel(game.level)//初始化砖块
+            let score = 0
+            gua(game, ball)//测试使用
+
+            game.registerAction('a', function () {//注册事件
+                paddle.moveLeft()
+            })
+            game.registerAction('d', function () {//注册事件
+                paddle.moveRight()
+            })
+
+            game.registerAction('f', function () {//注册事件
+                ball.fire()
+            })
+            window.addEventListener('keydown', function (e) {
+                if (e.key === 'g') {
+                    ball.fire1()
+                } else if ('1234566'.includes(e.key)) {
+                    blocks = loadLevel(Number(e.key))
+                }
+            })
+
+            game.update = function () {
+                ball.move()
+                //判断挡板
+                if (ball.y > 500 - ball.image.height) {//游戏结束
+                    window.gameOver = false
+                    score = 0
+                    blocks = loadLevel(1)
+                }
+               let blocksNumber =  blocks.filter(e => e.alive !== false)
+               console.log(blocksNumber.length)
+                if(blocksNumber.length === 0) {
+                    game.level++
+                    blocks = loadLevel(game.level)
+                }
+                if (paddle.collide(ball)) {
+                    ball.speedY *= -1
+                }
+                //判断砖块
+                for (let i = 0; i < blocks.length; i++) {
+                    let block = blocks[i]
+                    if (block.collide(ball)) {
+                        block.kill()
+                        score++
+                        ball.speedY *= -1
+                    }
+                }
+            }
+
+            game.draw = function () {
+                if (window.gameOver) {
+                    game.context.fillText(`按f开始游戏`, 10, 400)
+                    game.context.fillText(`分数：${score}`, 10, 450)
+                    game.context.fillText(`关卡：${game.level}`, 180, 10)
+                    game.drawImage(paddle)
+                    game.drawImage(ball)
+                    for (let i = 0; i < blocks.length; i++) {
+                        const block = blocks[i];
+                        if (block.alive) { //如果小球碰到了砖块就不画他
+                            game.drawImage(block)
+                        }
+                    }
+                } else {
+                    game.context.fillText(`游戏结束，按e重新开始游戏`, 180, 250)
+                }
+            }
+        }
+
+        __main()
+
+        window.addEventListener('keydown', function (e) {
+            let key = e.key
+            if (key === 'e') {
+                window.gameOver = true
+            }
+        })
+        window.addEventListener('keydown', function (e) {
+            let key = e.key
+            if (key === 'k') {
+                window.begin = true
+            }
+        })
+        let enableDrag = false//拖拽状态
+        function gua(game, ball) {
+            game.canvas.addEventListener('mousedown', function (e) {
+                let x = e.offsetX
+                let y = e.offsetY
+                if (ball.hasPoint(x, y)) {
+                    enableDrag = true
+                }
+            })
+            game.canvas.addEventListener('mousemove', function (e) {
+                let x = e.offsetX
+                let y = e.offsetY
+                if (enableDrag) {
+                    ball.x = x
+                    ball.y = y
+                }
+            })
+            game.canvas.addEventListener('mouseup', function (e) {
+                let x = e.offsetX
+                let y = e.offsetY
+                if (ball.hasPoint(x, y)) {
+                    enableDrag = false
+                }
+            })
+        }
+        btn.addEventListener('click' ,function () {
+            ball.speedY = 10
+            ball.speedY = 20
+        })  
+    </script>
+</body>
+
+</html>
